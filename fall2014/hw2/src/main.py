@@ -7,7 +7,7 @@ from utils.cv_utils import make_kernel
 
 
 IMAGE = '/Users/nikita_kartashov/Documents/Work/cv/fall2014/hw1/resource/Text.bmp'
-INTERMEDIATE_IMAGE = '/Users/nikita_kartashov/Documents/Work/cv/fall2014/hw1/resource/interm.bmp'
+INTERMEDIATE_IMAGE = '/Users/nikita_kartashov/Documents/Work/cv/fall2014/hw2/resource/interm.bmp'
 RESULT = '/Users/nikita_kartashov/Documents/Work/cv/fall2014/hw2/resource/result.bmp'
 
 BLUE = (255, 255, 0)
@@ -23,9 +23,9 @@ def generate_binary_groups(image):
         for j in range(1, width - 1):
             if image[i, j] < 255:
                 continue
-            ignored, bounding_rectangle_coords = \
+            result_flag, bounding_rectangle_coords = \
                 cv2.floodFill(image, mask, seedPoint=(j, i), newVal=0, flags=cv2.FLOODFILL_MASK_ONLY)
-            if not all(map(lambda x: x == 0, bounding_rectangle_coords)):
+            if result_flag:
                 resulting_rectangles.append(bounding_rectangle_coords)
     return resulting_rectangles
 
