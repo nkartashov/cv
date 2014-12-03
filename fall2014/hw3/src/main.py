@@ -3,6 +3,8 @@ __author__ = 'nikita_kartashov'
 import cv2
 import numpy as np
 
+from utils.cv_utils import read_image_grayscale
+
 IMAGE = '/Users/nikita_kartashov/Documents/Work/cv/fall2014/hw3/resource/mandril.bmp'
 RESULT_FOURIER = '/Users/nikita_kartashov/Documents/Work/cv/fall2014/hw3/resource/result_fourier.bmp'
 RESULT_LAPLASIAN = '/Users/nikita_kartashov/Documents/Work/cv/fall2014/hw3/resource/result_laplasian.bmp'
@@ -10,7 +12,7 @@ RESULT_LAPLASIAN = '/Users/nikita_kartashov/Documents/Work/cv/fall2014/hw3/resou
 FREQUENCY_BORDER = 30
 
 if __name__ == '__main__':
-    image = cv2.imread(IMAGE, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+    image = read_image_grayscale(IMAGE)
 
     after_dft_image = cv2.dft(np.float32(cv2.bitwise_not(image)))
     after_dft_shifted = np.fft.fftshift(after_dft_image)

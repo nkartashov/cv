@@ -3,7 +3,7 @@ __author__ = 'nikita_kartashov'
 import cv2
 import numpy as np
 
-from utils.cv_utils import make_kernel
+from utils.cv_utils import make_kernel, read_image_grayscale_inverted
 
 
 IMAGE = '/Users/nikita_kartashov/Documents/Work/cv/fall2014/hw1/resource/Text.bmp'
@@ -37,8 +37,7 @@ def draw_rectangles(image, rectangles):
 
 
 if __name__ == '__main__':
-    image = cv2.imread(IMAGE, cv2.CV_LOAD_IMAGE_GRAYSCALE)
-    image = cv2.bitwise_not(image)
+    image = read_image_grayscale_inverted(IMAGE)
     dilated_image = image
     dilated_image = cv2.dilate(image, kernel=make_kernel(1, 5))
     image = dilated_image
