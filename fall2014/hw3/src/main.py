@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     rows, columns = after_dft_image.shape
     center_row, center_column = rows / 2, columns / 2
-    mask = np.ones(after_dft_image.shape, np.uint8)
+    mask = np.ones_like(after_dft_image)
     mask[center_row - FREQUENCY_BORDER:center_row + FREQUENCY_BORDER,
          center_column - FREQUENCY_BORDER:center_column + FREQUENCY_BORDER] = 0
 
