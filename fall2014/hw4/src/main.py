@@ -25,7 +25,7 @@ def resize_half(image):
     return cv2.resize(image, (image.shape[0] / 2, image.shape[1] / 2))
 
 
-def manually_transform_keypoints(points):
+def manually_transform_keypoints(points, cols, rows):
     rotation_matrix = np.empty((2, 2), np.float32)
     rotation_matrix.fill(sqrt(2) / 2)
     rotation_matrix[0, 1] *= -1
@@ -35,19 +35,20 @@ def manually_transform_keypoints(points):
 
     resize_matrix[0, 0] = 0.5
     resize_matrix[1, 1] = 0.5
-    transformation_matrix = np.dot(resize_matrix, rotation_matrix)
-    return [np.dot(transformation_matrix, point) for point in points]
+    transformation_matrix = cv2.getRotationMatrix2D((cols / 2, rows / 2), 45, 0.5) # np.dot(resize_matrix, rotation_matrix)
+    return np.array([np.dot(cv2.transpose(transformation_matrix), point) for point in points])
 
 
 NFEATURES = 1000
-EPSILON = 100
+EPSILON = 20
 
 if __name__ == '__main__':
     image = read_image_grayscale(IMAGE)
     sift = cv2.SIFT(NFEATURES)
     initial_keypoints, initial_descriptors = sift.detectAndCompute(image, None)
     old_points = np.array(map(lambda x: np.array(x.pt, np.float32), initial_keypoints))
-    transformed_points = manually_transform_keypoints(old_points)
+    transformed_points = manually_transform_keypoints(old_points, image.shape[0], image.shape[1])
+    transformed_points = [np.array([x, y])for x, y, _ in transformed_points]
     keypoint_image = cv2.drawKeypoints(image, initial_keypoints, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
     rotated_image = rotate45(image)
@@ -66,16 +67,6 @@ if __name__ == '__main__':
 
     matches = flann.knnMatch(initial_descriptors, new_descriptors, k=2)
 
-    # Need to draw only good matches, so create a mask
-    matchesMask = [[0, 0] for i in xrange(len(matches))]
-
-    # ratio test as per Lowe's paper
-    for i, (m, n) in enumerate(matches):
-        if m.distance < 0.7 * n.distance:
-            matchesMask[i] = [True, 0]
-
-    matches = [match for match, mask in zip(matches, matchesMask) if head(mask)]
-
     really_matched_points = []
     for i, (m, n) in enumerate(matches):
         distance = np.linalg.norm(transformed_points[i] - new_keypoints[m.trainIdx].pt)
@@ -83,11 +74,6 @@ if __name__ == '__main__':
 
     fraction_matched = sum(really_matched_points) * 1.0 / (NFEATURES if NFEATURES else len(initial_keypoints))
     print('{0} fraction of points of interest were matched with epsilon = {1}'.format(fraction_matched, EPSILON))
-
-    draw_params = dict(matchColor=(0, 255, 0),
-                       singlePointColor=(255, 0, 0),
-                       matchesMask=matchesMask,
-                       flags=0)
 
     result_image = draw_matches(image, initial_keypoints, resized_image, new_keypoints, matches)
 
