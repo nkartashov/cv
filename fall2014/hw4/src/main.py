@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 
 from utils.cv_utils import read_image_grayscale, draw_matches
+from utils.py_utils import head
 
 
 IMAGE = '/Users/nikita_kartashov/Documents/Work/cv/fall2014/hw3/resource/mandril.bmp'
@@ -38,8 +39,8 @@ def manually_transform_keypoints(points):
     return [np.dot(transformation_matrix, point) for point in points]
 
 
-NFEATURES = 100
-EPSILON = 50
+NFEATURES = 1000
+EPSILON = 100
 
 if __name__ == '__main__':
     image = read_image_grayscale(IMAGE)
@@ -71,7 +72,9 @@ if __name__ == '__main__':
     # ratio test as per Lowe's paper
     for i, (m, n) in enumerate(matches):
         if m.distance < 0.7 * n.distance:
-            matchesMask[i] = [1, 0]
+            matchesMask[i] = [True, 0]
+
+    matches = [match for match, mask in zip(matches, matchesMask) if head(mask)]
 
     really_matched_points = []
     for i, (m, n) in enumerate(matches):
