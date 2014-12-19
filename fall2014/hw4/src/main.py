@@ -1,16 +1,19 @@
 __author__ = 'nikita_kartashov'
 
+from os import path
+
 import cv2
 import numpy as np
 
 from utils.cv_utils import read_image_grayscale, draw_matches
 
+def this_file():
+    return path.dirname(__file__)
 
-IMAGE = '/Users/nikita_kartashov/Documents/Work/cv/fall2014/hw3/resource/mandril.bmp'
-RESULT = '/Users/nikita_kartashov/Documents/Work/cv/fall2014/hw4/resource/result.bmp'
-KEYPOINTS = '/Users/nikita_kartashov/Documents/Work/cv/fall2014/hw4/resource/keypoints.bmp'
-NEW_KEYPOINTS = '/Users/nikita_kartashov/Documents/Work/cv/fall2014/hw4/resource/new_keypoints.bmp'
-
+IMAGE = path.join(this_file(), '../resource/mandril.bmp')
+RESULT = path.join(this_file(), '../resource/result.bmp')
+KEYPOINTS = path.join(this_file(), '../resource/keypoints.bmp')
+NEW_KEYPOINTS = path.join(this_file(), '../resource/new_keypoints.bmp')
 
 def transform_image(image):
     rows, cols = image.shape
